@@ -18,6 +18,10 @@ class GuestbookController extends Controller
 {
     protected $socket;
 
+    /**
+     * Inisialisasi awal sebelum method dieksekusi.
+     * @return void
+     */
     public function init()
     {
         $this->socket = new Socket(new Version1X('127.0.0.1:3000'));
@@ -145,6 +149,10 @@ class GuestbookController extends Controller
         }
     }
 
+    /**
+     * Menampilkan data guestbook.
+     * @return mixed Render view dan variabel yang didefinisikan.
+     */
     public function actionList()
     {
         $readMessages = Guestbook::find()->where(['read' => 1])->count();
@@ -160,16 +168,30 @@ class GuestbookController extends Controller
         return $this->render('list', get_defined_vars());
     }
 
+    /**
+     * Menghitung data yang berstatus belum dibaca.
+     * @return integer Jumlah data yang berstatus belum dibaca.
+     */
     public function actionUnreadCounter()
     {
         return Guestbook::find()->where(['read' => 0])->count();
     }
 
+    /**
+     * Menghitung data yang berstatus telah dibaca.
+     * @return integer Jumlah data yang berstatus telah dibaca.
+     */
     public function actionReadCounter()
     {
         return Guestbook::find()->where(['read' => 1])->count();
     }
 
+    /**
+     * Mengubah status "read" di database menjadi 1 yang artinya
+     * data tersebut sudah dibaca.
+     * @param  integer $id
+     * @return integer
+     */
     public function actionCheckAsRead($id = null)
     {
         if (!$id) { return 0; }
