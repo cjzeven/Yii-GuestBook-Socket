@@ -19,4 +19,4 @@ Cara Instalasi
 
 5. Jalankan node server menggunakan `node server.js`
 
-6. Enjoy!
+6. Akses `[localhost]/guestbook/index` untuk membuat guestbook baru dan `[localhost]/guestbook/list` untuk melihat list guestbook secara realtime.
