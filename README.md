@@ -8,7 +8,7 @@ Cara Instalasi
 ==============
 
 1. Clone repository.
-`git@github.com:cjzeven/socket.io-guestbook-example.git`
+`git clone git@github.com:cjzeven/socket.io-guestbook-example.git`
 
 2. Install dependency menggunakan composer.
 `composer install`
