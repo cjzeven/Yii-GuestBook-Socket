@@ -20,19 +20,22 @@ use yii\helpers\Html;
             'created_at',
 
             [
-                'header' => 'Mark as Read',
                 'class' => 'yii\grid\ActionColumn',
+                'header' => '<center>Mark as Read</center>',
                 'template' => '{view}',
+                'visibleButtons' => [
+                    'view' => function($model) {
+                        return !$model->read;
+                    }
+                ],
                 'buttons' => [
                     'view' => function($url, $model) {
-                        if (!$model->read) {
-                            $span = '<span class="glyphicon glyphicon-ok"></span>';
-                            return Html::a($span, "/guestbook/check-as-read?id={$model->id}", [
-                                'class' => 'view_message',
-                                'value' => $model->id,
-                                'title' => 'Mark as read'
-                            ]);
-                        }
+                        $span = '<span class="glyphicon glyphicon-ok"></span>';
+                        return Html::a($span, "/guestbook/check-as-read?id={$model->id}", [
+                            'class' => 'view_message',
+                            'value' => $model->id,
+                            'title' => 'Mark as read'
+                        ]);
                     }
                 ]
             ],

@@ -160,7 +160,10 @@ class GuestbookController extends Controller
         $unreadMessages = Guestbook::find()->where(['read' => 0])->count();
 
         $dataProvider = new ActiveDataProvider([
-            'query' => Guestbook::find()->orderBy(['read' => SORT_ASC, 'created_at' => SORT_DESC]),
+            'query' => Guestbook::find()->orderBy([
+                'read' => SORT_ASC,
+                'created_at' => SORT_DESC
+            ]),
             'pagination' => [
                 'pageSize' => 5
             ]
@@ -180,7 +183,10 @@ class GuestbookController extends Controller
     public function actionListPartial()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Guestbook::find()->orderBy(['read' => SORT_ASC, 'created_at' => SORT_DESC]),
+            'query' => Guestbook::find()->orderBy([
+                'read' => SORT_ASC,
+                'created_at' => SORT_DESC
+            ]),
             'pagination' => [
                 'pageSize' => 5
             ]
