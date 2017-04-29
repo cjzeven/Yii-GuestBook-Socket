@@ -49,7 +49,10 @@ class GuestbookController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Guestbook::find()->orderBy(['read' => SORT_ASC, 'created_at' => SORT_DESC]),
+            'query' => Guestbook::find()->orderBy([
+                'read' => SORT_ASC,
+                'created_at' => SORT_DESC
+            ]),
         ]);
 
         return $this->render('index', [
@@ -79,7 +82,6 @@ class GuestbookController extends Controller
         $model = new Guestbook();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            // Emit event "create" ke server
             $this->socket->initialize();
             $this->socket->emit('create_guestbook', []);
             $this->socket->close();
@@ -103,7 +105,6 @@ class GuestbookController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
             $this->socket->initialize();
             $this->socket->emit('update_guestbook', []);
             $this->socket->close();
@@ -165,7 +166,32 @@ class GuestbookController extends Controller
             ]
         ]);
 
-        return $this->render('list', get_defined_vars());
+        return $this->render('list', [
+            'dataProvider' => $dataProvider,
+            'readMessages' => $readMessages,
+            'unreadMessages' => $unreadMessages
+        ]);
+    }
+
+    /**
+     * Menampilkan data guestbook yang di request menggunakan ajax dari view list.php
+     * @return string Parsing data html hasil dari render partial.
+     */
+    public function actionListPartial()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Guestbook::find()->orderBy(['read' => SORT_ASC, 'created_at' => SORT_DESC]),
+            'pagination' => [
+                'pageSize' => 5
+            ]
+        ]);
+
+        $pagination = $dataProvider->getPagination();
+        $pagination->route = 'guestbook/list';
+
+        return $this->renderPartial('list_partial', [
+            'dataProvider' => $dataProvider
+        ]);
     }
 
     /**
@@ -203,6 +229,7 @@ class GuestbookController extends Controller
             $this->socket->initialize();
             $this->socket->emit('check_as_read', []);
             $this->socket->close();
+
             return 1;
         }
 

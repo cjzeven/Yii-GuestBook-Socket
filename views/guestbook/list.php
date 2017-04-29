@@ -76,11 +76,10 @@ $this->registerJs('
 
     function replaceListTable() {
         $.ajax({
-            url: url + "/guestbook/list",
+            url: url + "/guestbook/list-partial",
             method: "get",
             success: function(data) {
-                let content = $(data).find(".guestbook-content").html()
-                $(".guestbook-content").html(content)
+                $(".guestbook-content").replaceWith(data)
             }
         })
     }
