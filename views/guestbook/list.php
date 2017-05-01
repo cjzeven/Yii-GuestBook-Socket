@@ -23,6 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <div class="guestbook-content">
+
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'layout' => '{items} {summary} {pager}',
@@ -57,7 +58,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ],
             ],
-        ]); ?>
+        ]) ?>
+
     </div>
 </div>
 
