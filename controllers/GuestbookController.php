@@ -3,12 +3,12 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\Guestbook;
-use yii\data\ActiveDataProvider;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\Guestbook;
 use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
 use ElephantIO\Client as Socket;
+use yii\web\NotFoundHttpException;
 use ElephantIO\Engine\SocketIO\Version1X;
 
 /**
@@ -17,6 +17,7 @@ use ElephantIO\Engine\SocketIO\Version1X;
 class GuestbookController extends Controller
 {
     protected $socket;
+    protected $pageSize;
 
     /**
      * Inisialisasi awal sebelum method dieksekusi.
@@ -25,6 +26,7 @@ class GuestbookController extends Controller
     public function init()
     {
         $this->socket = new Socket(new Version1X('127.0.0.1:3000'));
+        $this->pageSize = 5;
     }
 
     /**
@@ -165,7 +167,7 @@ class GuestbookController extends Controller
                 'created_at' => SORT_DESC
             ]),
             'pagination' => [
-                'pageSize' => 5
+                'pageSize' => $this->pageSize
             ]
         ]);
 
@@ -188,7 +190,7 @@ class GuestbookController extends Controller
                 'created_at' => SORT_DESC
             ]),
             'pagination' => [
-                'pageSize' => 5
+                'pageSize' => $this->pageSize
             ]
         ]);
 

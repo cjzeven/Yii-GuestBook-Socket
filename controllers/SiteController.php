@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\RegisterForm;
 
 class SiteController extends Controller
 {
@@ -121,5 +122,28 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+     * Registrasi user baru.
+     *
+     * @return string
+     */
+    public function actionRegister()
+    {
+        $model = new RegisterForm;
+
+        if ($model->load(Yii::$app->request->post()) && $model->register()) {
+            Yii::$app->session->setFlash(
+                'registerSuccess',
+                Yii::t('main', 'Register success, please login first.')
+            );
+
+            return $this->redirect('/site/login');
+        } else {
+            $model->addError('username', Yii::t('main', 'Username already taken.'));
+        }
+
+        return $this->render('register', ['model' => $model]);
     }
 }

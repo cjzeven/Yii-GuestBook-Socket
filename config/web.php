@@ -44,9 +44,22 @@ $config = [
             'rules' => [
             ],
         ],
+        'authManager'=> [
+            'class' => 'yii\rbac\DbManager'
+        ],
+        'i18n' => [
+            'translations' => [
+                'main' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/messages'
+                ],
+            ],
+        ],
 
     ],
     'params' => $params,
+    'language' => 'id-ID',
+    'sourceLanguage' => 'en-US'
 ];
 
 if (YII_ENV_DEV) {

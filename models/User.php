@@ -2,30 +2,40 @@
 
 namespace app\models;
 
-class User extends \yii\base\Object implements \yii\web\IdentityInterface
+class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+    const SCENARIO_REGISTER = 'register';
+    const SCENARIO_LOGIN = 'login';
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
+    /**
+     * inheritdoc
+     *
+     * @return string
+     */
+    public static function tableName()
+    {
+        return 'users';
+    }
+
+    /**
+     * inheritdoc
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            [
+                ['username', 'password'],
+                'required',
+                'on' => [
+                    self::SCENARIO_LOGIN,
+                    self::SCENARIO_REGISTER
+                ]
+            ],
+            ['username', 'unique', 'on' => self::SCENARIO_REGISTER]
+        ];
+    }
 
 
     /**
@@ -33,7 +43,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return self::findOne($id);
     }
 
     /**
@@ -41,13 +51,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return static::findOne(['accessToken' => $token]);
     }
 
     /**
@@ -58,13 +62,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return static::findOne(['username' => $username]);
     }
 
     /**
@@ -99,6 +97,48 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return \Yii::$app->getSecurity()->validatePassword($password, $this->password);
+    }
+
+    /**
+     * Registrasi user baru ke database.
+     *
+     * @param  string $username
+     * @param  string $password
+     * @return bool
+     */
+    public static function register($username, $password)
+    {
+        $model = new User();
+        $model->scenario = self::SCENARIO_REGISTER;
+        $model->username = $username;
+        $model->password = $password;
+        $model->created_at = date('Y-m-d H:i:s');
+
+        if ($model->validate() && $model->save()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * inheritdoc
+     *
+     * @return bool
+     */
+    public function beforeSave()
+    {
+        /* Skenario untuk proses REGISTER */
+        if ($this->scenario == self::SCENARIO_REGISTER) {
+            $this->password = \Yii::$app->getSecurity()->generatePasswordHash($this->password);
+        }
+
+        /* Skenario untuk proses LOGIN */
+        if ($this->scenario == self::SCENARIO_LOGIN) {
+
+        }
+
+        return true;
     }
 }
